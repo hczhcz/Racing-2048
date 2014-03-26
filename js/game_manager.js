@@ -3,7 +3,8 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
   this.scoreManager = new ScoreManager;
   this.actuator     = new Actuator;
 
-  this.inputManager.on("jump", this.jump.bind(this));
+  this.inputManager.on("up", this.up.bind(this));
+  this.inputManager.on("down", this.down.bind(this));
 
   this.setup();
 
@@ -34,9 +35,17 @@ GameManager.prototype.isGameTerminated = function () {
 GameManager.prototype.setup = function () {
   this.score = 0;
   this.birdpos = 0.5;
-  this.birdspd = 0;
   this.ab = 1;
   this.cd = 1;
+
+  var self = this;
+  document.onmousemove = function(e){
+    // Hack
+    var objtop = document.querySelector(".grid-container").getBoundingClientRect().top;
+    var doctop = document.body.getBoundingClientRect().top;
+    var height = document.querySelector(".grid-container").clientHeight;
+    self.birdpos = (e.pageY - objtop + doctop) / height - 0.25;
+  }
 };
 
 // Set up the initial tiles to start the game with
@@ -238,13 +247,15 @@ GameManager.prototype.timer = function () {
   var self = this;
 
   // move
-  this.birdpos += this.birdspd;
-  this.birdspd += 0.00015 / (this.birdspd + 0.1);
 
-  if (this.birdpos > 1 && this.birdspd > 0) this.birdspd = -this.birdspd;
-  if (this.birdpos < -0.25 && this.birdspd < 0) this.birdspd = -this.birdspd;
+  if (this.birdpos > 1) this.birdpos = 1;
+  if (this.birdpos < -0.25) this.birdpos = -0.25;
 
-  this.score += 1 / 64;
+  this.score += 1 / 32;
+
+  if (this.action == 1) this.birdpos -= 0.1;
+  if (this.action == 2) this.birdpos += 0.1;
+  this.action = 0;
 
   // check
 
@@ -252,24 +263,28 @@ GameManager.prototype.timer = function () {
 
   if (steppos > 5 / 12 && steppos < 11 / 12) {
     var range = {0: [-0.15, 0.3], 1: [0.2, 0.55], 2: [0.45, 0.9]};
-    if (this.birdpos < range[this.ab][0] || this.birdpos > range[this.ab][1]) {
-      this.score = steppos; // cut down the integer part
+
+    if (this.dd != 1) {
+      if (this.birdpos < range[this.ab][0] || this.birdpos > range[this.ab][1]) {
+        this.score -= Math.floor(this.score / 2); // cut down the integer part
+        this.dd = 1;
+      }
     }
-  }
+  } else this.dd = 0;
 
   if (steppos == 0) {
     this.ab = this.cd;
     this.cd = Math.floor(Math.random() * 3);
   }
 
-  setTimeout(function () {self.timer();}, 384 / Math.sqrt(this.score + 256));
+  setTimeout(function () {self.timer();}, 128 / Math.sqrt(this.score + 32));
   this.actuate();
 }
 
-GameManager.prototype.jump = function () {
-  if (this.birdspd < 0) {
-    this.birdspd = -0.03;
-  } else {
-    this.birdspd = -0.025;
-  }
+GameManager.prototype.up = function () {
+  this.action = 1;
+}
+
+GameManager.prototype.down = function () {
+  this.action = 2;
 }

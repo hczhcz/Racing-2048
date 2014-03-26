@@ -41,17 +41,18 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
   var zonesize = this.gridContainer.clientHeight;
   var morepos = 0.75 * (metadata.score - s);
 
-  this.birdobj.style.top = metadata.birdpos * zonesize + "px";
+  this.birdobj.style.left = metadata.birdpos * zonesize + "px";
+  this.birdobj.style.top = 0.75 * zonesize + "px";
 
-  this.blockobja.style.top = [0.5 , 0   , 0   ][metadata.ab] * zonesize + "px";
-  this.blockobjb.style.top = [0.75, 0.75, 0.25][metadata.ab] * zonesize + "px";
-  this.blockobjc.style.top = [0.5 , 0   , 0   ][metadata.cd] * zonesize + "px";
-  this.blockobjd.style.top = [0.75, 0.75, 0.25][metadata.cd] * zonesize + "px";
+  this.blockobja.style.left = [0.5 , 0   , 0   ][metadata.ab] * zonesize + "px";
+  this.blockobjb.style.left = [0.75, 0.75, 0.25][metadata.ab] * zonesize + "px";
+  this.blockobjc.style.left = [0.5 , 0   , 0   ][metadata.cd] * zonesize + "px";
+  this.blockobjd.style.left = [0.75, 0.75, 0.25][metadata.cd] * zonesize + "px";
 
-  this.blockobja.style.left = (0.5  - morepos) * zonesize + "px";
-  this.blockobjb.style.left = (0.5  - morepos) * zonesize + "px";
-  this.blockobjc.style.left = (1.25 - morepos) * zonesize + "px";
-  this.blockobjd.style.left = (1.25 - morepos) * zonesize + "px";
+  this.blockobja.style.top = (0.25  + morepos) * zonesize + "px";
+  this.blockobjb.style.top = (0.25  + morepos) * zonesize + "px";
+  this.blockobjc.style.top = (-.5 + morepos) * zonesize + "px";
+  this.blockobjd.style.top = (-.5 + morepos) * zonesize + "px";
 
   this.birdinn.textContent = s;
 

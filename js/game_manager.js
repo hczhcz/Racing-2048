@@ -3,9 +3,6 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
   this.scoreManager = new ScoreManager;
   this.actuator     = new Actuator;
 
-  this.inputManager.on("up", this.up.bind(this));
-  this.inputManager.on("down", this.down.bind(this));
-
   this.setup();
 
   this.timer();
@@ -41,10 +38,11 @@ GameManager.prototype.setup = function () {
   var self = this;
   document.onmousemove = function(e){
     // Hack
-    var objtop = document.querySelector(".grid-container").getBoundingClientRect().top;
-    var doctop = document.body.getBoundingClientRect().top;
-    var height = document.querySelector(".grid-container").clientHeight;
-    self.birdpos = (e.pageY - objtop + doctop) / height - 0.25;
+    var objpos = document.querySelector(".grid-container").getBoundingClientRect().left;
+    var docpos = document.body.getBoundingClientRect().left;
+    var xsize = document.querySelector(".grid-container").clientHeight;
+    var tsize = document.querySelector(".tile-bird").clientHeight;
+    self.birdpos = (e.pageX - objpos + docpos - tsize / 2) / xsize;
   }
 };
 
@@ -253,10 +251,6 @@ GameManager.prototype.timer = function () {
 
   this.score += 1 / 32;
 
-  if (this.action == 1) this.birdpos -= 0.1;
-  if (this.action == 2) this.birdpos += 0.1;
-  this.action = 0;
-
   // check
 
   var steppos = this.score - Math.floor(this.score);
@@ -279,12 +273,4 @@ GameManager.prototype.timer = function () {
 
   setTimeout(function () {self.timer();}, 128 / Math.sqrt(this.score + 32));
   this.actuate();
-}
-
-GameManager.prototype.up = function () {
-  this.action = 1;
-}
-
-GameManager.prototype.down = function () {
-  this.action = 2;
 }
